@@ -1,0 +1,26 @@
+import nltk
+from sklearn.feature_extraction.text import TfidfVectorizer
+from nltk.corpus import stopwords
+import string
+
+# Preprocessing function
+def preprocess_text(text):
+    text = text.lower()
+    tokens = nltk.word_tokenize(text)
+    tokens = [word for word in tokens if word not in stopwords.words('english') and word not in string.punctuation]
+    return ' '.join(tokens)
+
+# Load the dataset (replace 'data.csv' with the actual dataset file)
+import pandas as pd
+data = pd.read_csv('abstracts.csv')  # Dataset harus memiliki kolom 'Abstract'
+
+# Preprocess the abstracts
+data['cleaned_abstract'] = data['Abstract'].apply(preprocess_text)
+
+# TF-IDF Vectorization
+vectorizer = TfidfVectorizer(max_features=50)  # Ambil 50 kata kunci teratas
+X = vectorizer.fit_transform(data['cleaned_abstract'])
+
+# Output keywords
+keywords = vectorizer.get_feature_names_out()
+print("Top Keywords:", keywords)
